@@ -12,6 +12,9 @@ use LITRE;
 my %samples = (
         '(a (bb "ccc \\"dddd\\"" (e\\(f" gg\\\\gg d (i))) j\\ k)'
         => ['a', ['bb', 'ccc "dddd"', ['e(f"', 'gg\\gg', 'd', ['i']]], 'j k'],
+
+        '(a () () b (()) (((()))))'
+        => ['a', [], [], 'b', [[]], [[[[]]]]],
     );
 
 done_testing( scalar(keys %samples) + 4 );

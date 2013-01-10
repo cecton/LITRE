@@ -25,7 +25,7 @@ sub parse_atom
 sub parse_list
 {
     @_ and local $_ = shift();
-    return unless s/^\(// and not m/^\)/;
+    return unless s/^\(//;
     my @list;
     my $parsed;
     push @list, $parsed while $_ and ($parsed = &parse) or not s/^\)//;
