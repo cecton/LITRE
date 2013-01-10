@@ -21,24 +21,28 @@ sub parse_atom()
     $atom
 }
 
-sub parse_list() { [&parse] if s/^\(// and not m/^\)/ }
+sub parse_list() {
+    my @list;
+    return unless s/^\(// and not m/^\)/;
+    while( $_ and my $parsed = &parse ) {
+        push @list, $parsed;;
+    }
+    \@list
+}
 
 sub parse
 {
     @_ and local $_ = shift();
-    my @expr;
-    my $sub_expr;
+    return unless $_;
+    my $list;
     my $atom;
-    while( $_ ) {
-        s/^\s+//;
-        return @expr if s/^\)//;
-        ($sub_expr = &parse_list)
-            and (push @expr, $sub_expr)
-            or ($atom = &parse_atom)
-                and (push @expr, $atom)
-                or (die "Cannot parse: $_\n");
-    }
-    @expr
+    s/^\s+//;
+    return if s/^\)//;
+    ($list = &parse_list)
+        and return $list
+        or ($atom = &parse_atom)
+            and return $atom
+            or die "Cannot parse: ".substr($_,0,10)."\n";
 }
 
 1;

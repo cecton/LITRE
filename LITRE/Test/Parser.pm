@@ -14,7 +14,7 @@ my %samples = (
         => ['a', ['bb', 'ccc "dddd"', ['e(f"', 'gg\\gg', 'd', ['i']]], 'j k'],
     );
 
-done_testing( scalar(keys %samples) );
+done_testing( scalar(keys %samples) + 4 );
 
 while( my($sample,$expected) = each %samples ) {
 
@@ -26,5 +26,14 @@ while( my($sample,$expected) = each %samples ) {
         $sample);
 
 }
+
+$_ = "a b";
+my $expr = LITRE::parse;
+ok($expr eq 'a', "'a' is parsed from 'a b'");
+ok($_ eq ' b', "' b' rest from 'a b'");
+
+$expr = LITRE::parse($_ = "a b");
+ok($expr eq 'a', "'a' is parsed from 'a b'");
+ok($_ eq 'a b', "\$_ is untouched");
 
 1;
