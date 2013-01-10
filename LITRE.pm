@@ -4,41 +4,41 @@ use warnings;
 
 package LITRE;
 
-sub parse_value
+sub parse_atom()
 {
-    my $s = shift;
-    $s =~ s/^\s+//;
-    if( $s =~ s/^["']// ) {
+    return unless $_;
+    my $atom;
+    if( s/^["']// ) {
         my $delimiter = $&;
-        $s =~ s/((?:[^$delimiter]+|\\$delimiter)*)(?:(?<!\\)$delimiter)//
+        s/((?:[^$delimiter]+|\\$delimiter)*)(?:(?<!\\)$delimiter)//
+            and $atom = $1
             or die "Cannot find end string delimiter $delimiter near `"
-                   .substr($s,0,10)."'\n";
-        my $v = $1;
-        return $v, $s;
-    } elsif( $s =~ s/^(?:[^\s()\\]+|\\.)+// ) {
-        return $&, $s;
+                   .substr($_,0,10)."'\n";
+    } elsif( s/^(?:[^\s()\\]+|\\.)+// ) {
+        $atom = $&;
     }
-    die "Cannot parse empty values!\n";
+    $atom =~ s/\\(.)/$1/g;
+    $atom
 }
 
-sub parse_list
+sub parse_list() { [&parse] if s/^\(// and not m/^\)/ }
+
+sub parse
 {
-    my $s = shift;
-    my @list;
-    if( $s =~ s/^\s*\(// ) {
-        while( not $s =~ s/^\)// ) {
-            die "Not terminated list!\n" unless $s;
-            if( $s =~ m/^\s*\(/ ) {
-                (my($sub_list), $s) = parse_list($s);
-                push @list, $sub_list;
-            } else {
-                (my($v), $s) = parse_value($s);
-                push @list, $v;
-            }
-        }
-        return \@list, $s;
+    @_ and local $_ = shift();
+    my @expr;
+    my $sub_expr;
+    my $atom;
+    while( $_ ) {
+        s/^\s+//;
+        return @expr if s/^\)//;
+        ($sub_expr = &parse_list)
+            and (push @expr, $sub_expr)
+            or ($atom = &parse_atom)
+                and (push @expr, $atom)
+                or (die "Cannot parse: $_\n");
     }
-    die "Cannot parse list near: ".substr($s,0,10)."\n";
+    @expr
 }
 
 1;
