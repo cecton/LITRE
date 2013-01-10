@@ -4,8 +4,9 @@ use warnings;
 
 package LITRE;
 
-sub parse_atom()
+sub parse_atom
 {
+    @_ and local $_ = shift();
     return unless $_;
     my $atom;
     if( s/^["']// ) {
@@ -21,12 +22,13 @@ sub parse_atom()
     $atom
 }
 
-sub parse_list() {
-    my @list;
+sub parse_list
+{
+    @_ and local $_ = shift();
     return unless s/^\(// and not m/^\)/;
-    while( $_ and my $parsed = &parse ) {
-        push @list, $parsed;;
-    }
+    my @list;
+    my $parsed;
+    push @list, $parsed while $_ and $parsed = &parse;
     \@list
 }
 
@@ -42,7 +44,7 @@ sub parse
         and return $list
         or ($atom = &parse_atom)
             and return $atom
-            or die "Cannot parse: ".substr($_,0,10)."\n";
+            or die "Cannot parse: ".substr($_,0,10)."\n"
 }
 
 1;
