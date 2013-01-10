@@ -7,7 +7,7 @@ package LITRE;
 sub parse_atom
 {
     @_ and local $_ = shift();
-    return unless $_;
+    return unless m/^[^)]/;
     my $atom;
     if( s/^["']// ) {
         my $delimiter = $&;
@@ -28,7 +28,7 @@ sub parse_list
     return unless s/^\(// and not m/^\)/;
     my @list;
     my $parsed;
-    push @list, $parsed while $_ and $parsed = &parse;
+    push @list, $parsed while $_ and ($parsed = &parse) or not s/^\)//;
     \@list
 }
 
@@ -39,12 +39,11 @@ sub parse
     my $list;
     my $atom;
     s/^\s+//;
-    return if s/^\)//;
     ($list = &parse_list)
         and return $list
         or ($atom = &parse_atom)
             and return $atom
-            or die "Cannot parse: ".substr($_,0,10)."\n"
+            or return;
 }
 
 1;
