@@ -3,7 +3,9 @@ LITRE
 
 LIsp-like with TRE
 
-DONE
-----
+Features
+--------
 
-* Parser with test
+[x] Parser with tests
+[x] Statements with tests
+[x] Type with tests
