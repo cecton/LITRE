@@ -7,7 +7,7 @@ package LITRE::Test::Parser;
 use Test::More;
 use Data::Dumper;
 
-use LITRE;
+use LITRE::Parser;
 
 my %samples = (
         '(a (bb "ccc \\"dddd\\"" (e\\(f" gg\\\\gg d (i))) j\\ k)'
@@ -21,7 +21,7 @@ done_testing( scalar(keys %samples) + 4 );
 
 while( my($sample,$expected) = each %samples ) {
 
-    my($expr,@rest) = LITRE::parse($sample);
+    my($expr,@rest) = LITRE::Parser::parse($sample);
 
     my($dump_sample, $dump_expected) = (Dumper($expr), Dumper($expected));
 
@@ -31,11 +31,11 @@ while( my($sample,$expected) = each %samples ) {
 }
 
 $_ = "a b";
-my $expr = LITRE::parse;
+my $expr = LITRE::Parser::parse;
 ok($expr eq 'a', "'a' is parsed from 'a b'");
 ok($_ eq ' b', "' b' rest from 'a b'");
 
-$expr = LITRE::parse($_ = "a b");
+$expr = LITRE::Parser::parse($_ = "a b");
 ok($expr eq 'a', "'a' is parsed from 'a b'");
 ok($_ eq 'a b', "\$_ is untouched");
 

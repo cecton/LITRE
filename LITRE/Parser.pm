@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 
-package LITRE;
+package LITRE::Parser;
 
 sub parse_atom
 {
