@@ -6,6 +6,6 @@ LIsp-like with TRE
 Features
 --------
 
-* Parser with tests
-* Statements with tests
-* Type with tests
+- [x] Parser with tests
+- [x] Statements with tests
+- [x] Type with tests
