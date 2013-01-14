@@ -2,7 +2,7 @@ use 5.006;
 use strict;
 use warnings;
 
-package LITRE::Test::Translate;
+package LITRE::Boolean::Translate;
 
 use Test::More;
 use Data::Dumper;
@@ -16,19 +16,19 @@ my $test_count = 0;
     my $expr = ['?', ['=', 1, 1], 'a', 'b'];
     my $eval = translate($expr);
 
-    isa_ok($eval, 'LITRE::Statement::If');
-    isa_ok($eval, 'LITRE::Statement');
-    isa_ok($eval->{condition}, 'LITRE::Statement::Test');
+    isa_ok($eval, 'LITRE::Expression::If');
+    isa_ok($eval, 'LITRE::Expression');
+    isa_ok($eval->{condition}, 'LITRE::Expression::Boolean');
 
     $test_count += 3;
 }
 
-# Can have Test statements
+# Can have Boolean statements
 {
     my %operators = (
-            (map {$_ => 'LITRE::Statement::NumericTest'}
+            (map {$_ => 'LITRE::Expression::Boolean::Numeric'}
                 qw(= =/ =/= < <= > >=)),
-            (map {$_ => 'LITRE::Statement::BooleanTest'}
+            (map {$_ => 'LITRE::Expression::Boolean::Boolean'}
                 qw(and && or ||)),
         );
 
@@ -37,8 +37,8 @@ my $test_count = 0;
         my $eval = translate($expr);
 
         isa_ok($eval, $expectedType);
-        isa_ok($eval, 'LITRE::Statement::Test');
-        isa_ok($eval, 'LITRE::Statement');
+        isa_ok($eval, 'LITRE::Expression::Boolean');
+        isa_ok($eval, 'LITRE::Expression');
 
         $test_count += 3;
     }
@@ -51,10 +51,6 @@ my $test_count = 0;
                 qw/-2000000 -2 0 2 2000000/),
             (map {$_ => 'LITRE::Type::Float'}
                 qw/-2000000.2 -2.0 0.0 2.2 2000000.0/),
-            (map {$_ => 'LITRE::Type::NaN'}
-                qw/NaN nan Nan NAN/),
-            (map {$_ => 'LITRE::Type::Inf'}
-                qw/Inf inf INF/),
             (map {$_ => 'LITRE::Type::String'}
                 'abc', '{(}*!#)'),
         );
@@ -66,6 +62,26 @@ my $test_count = 0;
         isa_ok($eval, 'LITRE::Type');
 
         $test_count += 2;
+    }
+
+    for my $v (qw/NaN nan Nan NAN/) {
+        my $eval = translate($v);
+
+        isa_ok($eval, 'LITRE::Type::Float');
+        isa_ok($eval, 'LITRE::Type');
+        ok($eval->isnan, "Number is NaN");
+
+        $test_count += 3;
+    }
+
+    for my $v (qw/Inf inf INF/) {
+        my $eval = translate($v);
+
+        isa_ok($eval, 'LITRE::Type::Float');
+        isa_ok($eval, 'LITRE::Type');
+        ok($eval->isinf, "Number is Inf");
+
+        $test_count += 3;
     }
 }
 

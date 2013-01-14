@@ -39,11 +39,9 @@ sub parse
     my $list;
     my $atom;
     s/^\s+//;
-    ($list = &parse_list)
-        and return $list
-        or ($atom = &parse_atom)
-            and return $atom
-            or return;
+
+    $list = &parse_list and $list
+    or $atom = &parse_atom and $atom
 }
 
 1;
