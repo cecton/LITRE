@@ -40,8 +40,7 @@ sub parse
     my $atom;
     s/^\s+//;
 
-    $list = &parse_list and $list
-    or $atom = &parse_atom and $atom
+    &parse_list or &parse_atom
 }
 
 1;
